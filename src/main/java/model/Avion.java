@@ -1,5 +1,6 @@
 package model;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -9,24 +10,35 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 
 @Entity
+@NamedQuery(
+        name = Avion.GET_ALL_AVIONS, query = "SELECT a FROM Avion a"
+)
+
+ 
 public class Avion {
+	
+	public static final String GET_ALL_AVIONS = "Avion.getAllAvions";
+	
+	
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "avion_seq")
     private int id;
     private int kapacitet;
     private String model_aviona;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Let> let;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "avion")
+    private Set<Let> letovi = new HashSet<>();
 	
-	public Avion(int id, int kapacitet, String model_aviona, Set<Let> let) {
+	public Avion(int id, int kapacitet, String model_aviona) {
 		super();
 		this.id = id;
 		this.kapacitet = kapacitet;
 		this.model_aviona = model_aviona;
-		this.let = let;
+		this.letovi = letovi;
 	}
 	public Avion() {
 		super();
@@ -50,15 +62,21 @@ public class Avion {
 		this.model_aviona = model_aviona;
 	}
 	
-	public Set<Let> getLet() {
-		return let;
+	public Set<Let> getLetovi() {
+		return letovi;
 	}
-	public void setLet(Set<Let> let) {
-		this.let = let;
+	public void setLetovi(Set<Let> letovi) {
+		this.letovi = letovi;
 	}
+	public static String getGetAllAvions() {
+		return GET_ALL_AVIONS;
+	}
+	
+	
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, kapacitet, model_aviona);
+		return Objects.hash(id, kapacitet, letovi, model_aviona);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -69,7 +87,7 @@ public class Avion {
 		if (getClass() != obj.getClass())
 			return false;
 		Avion other = (Avion) obj;
-		return Objects.equals(id, other.id) && kapacitet == other.kapacitet
+		return id == other.id && kapacitet == other.kapacitet && Objects.equals(letovi, other.letovi)
 				&& Objects.equals(model_aviona, other.model_aviona);
 	}
 	@Override

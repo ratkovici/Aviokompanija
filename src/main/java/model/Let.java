@@ -12,10 +12,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
+
+@NamedQuery(
+        name = Let.GET_LETOVI_FOR_AVIONS,
+        query = "SELECT l FROM Let l WHERE l.avion.id = :id"
+)
 
 @Entity
 public class Let {
+	
+    public static final String GET_LETOVI_FOR_AVIONS = "Let.getLetoviForAvions";
+
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "let_seq")
 	private int id;
@@ -27,7 +37,7 @@ public class Let {
 	@ManyToOne
 	@JoinColumn(name = "avion_id")
 	private Avion avion;
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Pilot pilot;
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Putnik> putnici;
