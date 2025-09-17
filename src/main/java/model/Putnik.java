@@ -3,6 +3,8 @@ package model;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,16 +12,31 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Transient;
+
+@NamedQueries({
+		@NamedQuery (name=Putnik.GET_ALL_PUTNIK , query = "SELECT p from Putnik p"),
+		@NamedQuery (name=Putnik.GET_LONGEST_PNAME, query = "SELECT p from Putnik p ORDER BY char_length(p.ime) DESC"),
+})
+
 
 @Entity
+
 public class Putnik {
+	
+	public static final String GET_ALL_PUTNIK="Putnik.getAllPutnik";
+	public static final String GET_LONGEST_PNAME= "Putnik.getLongestPname"; 
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "putnik_seq")
 	private int id;
 	private String ime;
 	private String prezime;
 	private String broj_pasosa;
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "putnici")
+	@JsonIgnore
 	private Set<Let> letovi;
 	public Putnik(int id, String ime, String prezime, String broj_pasosa) {
 		super();

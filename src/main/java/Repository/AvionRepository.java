@@ -25,6 +25,11 @@ public class AvionRepository {
     }
 	
     @Transactional
+    public Avion updateAvion(Avion avion) {
+        return em.merge(avion);  
+    }
+    
+    @Transactional
     public List<Avion> getAllAvions() {
         
         List<Avion> avioni = em.createNamedQuery(Avion.GET_ALL_AVIONS, Avion.class)
@@ -41,5 +46,19 @@ public class AvionRepository {
 
         return avioni;
     }
+    
+    public Avion findById(int id) {
+        return em.find(Avion.class, id);
+    }
+
+    public Avion save(Avion avion) {
+        if (avion.getId() == 0) {
+            em.persist(avion);
+            return avion;
+        } else {
+            return em.merge(avion);
+        }
+    }
+
 	
 }

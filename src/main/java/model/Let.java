@@ -10,6 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQuery;
@@ -19,12 +21,15 @@ import jakarta.persistence.OneToMany;
         name = Let.GET_LETOVI_FOR_AVIONS,
         query = "SELECT l FROM Let l WHERE l.avion.id = :id"
 )
-
+@NamedQuery(
+        name = Let.GET_LETOVI_FOR_PUTNIK,
+        query = "SELECT l FROM Let l JOIN l.putnici p WHERE p.id = :id"
+        )
 @Entity
 public class Let {
 	
     public static final String GET_LETOVI_FOR_AVIONS = "Let.getLetoviForAvions";
-
+    public static final String GET_LETOVI_FOR_PUTNIK = "Let.getLetoviForPutnik";
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "let_seq")
@@ -34,12 +39,16 @@ public class Let {
 	private String dolaznig;
 	private String vrijeme_dolaska;
 	private String vrijeme_polaska;
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "avion_id")
 	private Avion avion;
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Pilot pilot;
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "let_putnik",
+			joinColumns = @JoinColumn(name = "let_id"),
+			inverseJoinColumns = @JoinColumn(name = "puntik_id")
+			)
 	private Set<Putnik> putnici;
 	public Let(int id, String broj_leta, String polaznig, String dolaznig, String vrijeme_dolaska,
 			String vrijeme_polaska, Avion avion, Pilot pilot) {

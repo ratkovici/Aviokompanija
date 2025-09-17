@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 
 @Entity
 @NamedQuery(
@@ -31,8 +34,12 @@ public class Avion {
     private int kapacitet;
     private String model_aviona;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "avion")
+    @JsonIgnore
     private Set<Let> letovi = new HashSet<>();
-	
+    @Transient
+	private byte [] fileContent;
+    private String filePath;
+    
 	public Avion(int id, int kapacitet, String model_aviona) {
 		super();
 		this.id = id;
@@ -72,23 +79,30 @@ public class Avion {
 		return GET_ALL_AVIONS;
 	}
 	
-	
+	public byte[] getFileContent() {
+		return fileContent;
+	}
+	public void setFileContent(byte[] fileContent) {
+		this.fileContent = fileContent;
+	}
+	public String getFilePath() {
+		return filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, kapacitet, letovi, model_aviona);
+	    return Objects.hash(id, kapacitet, model_aviona);
 	}
+
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Avion other = (Avion) obj;
-		return id == other.id && kapacitet == other.kapacitet && Objects.equals(letovi, other.letovi)
-				&& Objects.equals(model_aviona, other.model_aviona);
+	    if (this == obj) return true;
+	    if (obj == null || getClass() != obj.getClass()) return false;
+	    Avion other = (Avion) obj;
+	    return Objects.equals(id, other.id);
 	}
 	@Override
 	public String toString() {
